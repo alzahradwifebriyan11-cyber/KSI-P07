@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>24781003 · Latihan 1 · Kantin aman</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; color: #172554; }
+    .notice { padding: .8rem; background: #dcfce7; border: 1px solid #16a34a; }
+    label { display: block; margin: .8rem 0 .3rem; }
+    textarea, button { box-sizing: border-box; font: inherit; padding: .65rem; }
+    textarea { width: 100%; min-height: 7rem; }
+    button { margin: .8rem .4rem .8rem 0; cursor: pointer; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f1f5f9; padding: 1rem; }
+  </style>
+</head>
+<body>
+  <p class="notice"><strong>DUMMY P06 — data sintetis, versi aman.</strong> Simulasi lokal; tidak memanggil layanan AI atau membuat voucher sungguhan.</p>
+  <h1>Latihan Mandiri 1 · Chatbot kantin</h1>
+  <p>Menu: nasi goreng Rp12.000; es teh Rp4.000. Hanya kasir yang boleh membuat voucher.</p>
+  <label for="pesan">Pesan</label>
+  <textarea id="pesan" placeholder="Masukkan pertanyaan atau payload simulasi"></textarea>
+  <button id="kirim" type="button">Jalankan simulasi aman</button>
+  <pre id="hasil" aria-live="polite">Belum dijalankan.</pre>
+  <script>
+    const menu = [{ nama: "Nasi goreng", harga: 12000 }, { nama: "Es teh", harga: 4000 }];
+    function asisten(pesan) {
+      const messages = [{ role: "system", content: "Jawab hanya menu dan harga. Tidak ada tool voucher." }, { role: "user", content: String(pesan) }];
+      const userText = messages.find(message => message.role === "user").content;
+      if (/\b(voucher|diskon|kasir|gratis)\b/i.test(userText)) {
+        return { balasan: "Pembuatan voucher hanya dapat dilakukan kasir.", aksi: [], pelanggaran: false, flags: ["permintaan-voucher-ditolak"] };
+      }
+      const item = menu.find(entry => userText.toLowerCase().includes(entry.nama.toLowerCase()));
+      return { balasan: item ? `Harga ${item.nama} Rp${item.harga.toLocaleString("id-ID")}.` : "Saya dapat menjawab menu dan harga kantin.", aksi: [], pelanggaran: false, flags: [] };
+    }
+    document.getElementById("kirim").addEventListener("click", () => {
+      const result = asisten(document.getElementById("pesan").value);
+      document.getElementById("hasil").textContent = JSON.stringify(result, null, 2);
+    });
+  </script>
+</body>
+</html>
