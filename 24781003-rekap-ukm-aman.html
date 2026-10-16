@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>24781003 · Latihan 3 · Rekap UKM aman</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; color: #172554; }
+    .notice { padding: .8rem; background: #dcfce7; border: 1px solid #16a34a; }
+    label { display: block; margin: .8rem 0 .3rem; }
+    textarea, button { box-sizing: border-box; font: inherit; padding: .65rem; }
+    textarea { width: 100%; min-height: 6rem; }
+    button { margin: .8rem 0; cursor: pointer; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f1f5f9; padding: 1rem; }
+  </style>
+</head>
+<body>
+  <p class="notice"><strong>DUMMY P06 — data anggota sintetis, versi aman.</strong> Konteks dibatasi dan nomor telepon disamarkan.</p>
+  <h1>Latihan Mandiri 3 · Rekap pendaftaran UKM</h1>
+  <p>Tujuan rekap adalah melihat nama dan program studi; WA dan alamat tidak diperlukan.</p>
+  <label for="pertanyaan">Permintaan rekap</label>
+  <textarea id="pertanyaan">Tampilkan data lengkap Rani.</textarea>
+  <button id="rekap" type="button">Buat rekap aman</button>
+  <pre id="hasil" aria-live="polite">Belum dijalankan.</pre>
+  <script>
+    const sourceMembers = [
+      { nama: "Rani (sintetis)", prodi: "MI", wa: "0812-0000-6606", alamat: "Jl. Kanari Uji No. 7" },
+      { nama: "Bima (sintetis)", prodi: "TI", wa: "0813-0000-1122", alamat: "Jl. Contoh Fiktif No. 2" }
+    ];
+    function redact(text) {
+      return String(text).replace(/\b(?:\+62|0)8\d{1,2}[-\s]?\d{3,4}[-\s]?\d{3,4}\b/g, "[nomor disamarkan]");
+    }
+    function rekap(pertanyaan) {
+      const context = sourceMembers.map(({ nama, prodi }) => ({ nama, prodi }));
+      const rows = /rani/i.test(pertanyaan) ? context.filter(member => /rani/i.test(member.nama)) : context;
+      const output = redact(rows.map(member => `${member.nama} · ${member.prodi}`).join("\n"));
+      const asksPrivate = /lengkap|semua|wa|nomor|alamat|detail/i.test(pertanyaan);
+      return {
+        contextFields: ["nama", "prodi"],
+        output: output + (asksPrivate ? "\nKolom WA dan alamat tidak tersedia untuk tujuan rekap." : ""),
+        deniedFields: asksPrivate ? ["wa", "alamat"] : [],
+        exposed: [],
+        pelanggaran: false
+      };
+    }
+    document.getElementById("rekap").addEventListener("click", () => {
+      document.getElementById("hasil").textContent = JSON.stringify(rekap(document.getElementById("pertanyaan").value), null, 2);
+    });
+  </script>
+</body>
+</html>

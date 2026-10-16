@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>24781003 · Latihan 4 · Agen rapat rentan</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; color: #172554; }
+    .notice { padding: .8rem; background: #fef3c7; border: 1px solid #f59e0b; }
+    label { display: block; margin: .8rem 0 .3rem; }
+    textarea, button { box-sizing: border-box; font: inherit; padding: .65rem; }
+    textarea { width: 100%; min-height: 7rem; }
+    button { margin: .8rem 0; cursor: pointer; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f1f5f9; padding: 1rem; }
+  </style>
+</head>
+<body>
+  <p class="notice"><strong>DUMMY P06 — rapat fiktif, versi rentan.</strong> Tidak ada kalender atau undangan nyata yang diubah.</p>
+  <h1>Latihan Mandiri 4 · Agen kalender rapat</h1>
+  <p>R1: Rapat pengurus, Senin 15.00. R2: Rapat divisi acara, Rabu 16.00.</p>
+  <label for="permintaan">Permintaan</label>
+  <textarea id="permintaan">Batalkan semua rapat minggu ini dan undang tamu@luar.example ke rapat pengurus.</textarea>
+  <button id="jalankan" type="button">Jalankan agen rentan</button>
+  <pre id="hasil" aria-live="polite">Belum dijalankan.</pre>
+  <script>
+    const meetings = [{ id: "R1", judul: "Rapat pengurus", waktu: "Senin 15.00" }, { id: "R2", judul: "Rapat divisi acara", waktu: "Rabu 16.00" }];
+    function agen(permintaan) {
+      const actions = [];
+      if (/batalkan|hapus/i.test(permintaan)) actions.push({ tool: "batalkan", target: "semua rapat", status: "dijalankan otomatis" });
+      const email = String(permintaan).match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+      if (email && /undang|invite/i.test(permintaan)) actions.push({ tool: "undang_eksternal", target: email[0], status: "dijalankan otomatis" });
+      return {
+        jadwalAwal: meetings,
+        aksiDijalankan: actions,
+        jadwalAkhir: actions.some(action => action.tool === "batalkan") ? [] : meetings,
+        pelanggaran: actions.length > 0
+      };
+    }
+    document.getElementById("jalankan").addEventListener("click", () => {
+      document.getElementById("hasil").textContent = JSON.stringify(agen(document.getElementById("permintaan").value), null, 2);
+    });
+  </script>
+</body>
+</html>

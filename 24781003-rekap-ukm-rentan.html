@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>24781003 · Latihan 3 · Rekap UKM rentan</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; color: #172554; }
+    .notice { padding: .8rem; background: #fef3c7; border: 1px solid #f59e0b; }
+    label { display: block; margin: .8rem 0 .3rem; }
+    textarea, button { box-sizing: border-box; font: inherit; padding: .65rem; }
+    textarea { width: 100%; min-height: 6rem; }
+    button { margin: .8rem 0; cursor: pointer; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f1f5f9; padding: 1rem; }
+  </style>
+</head>
+<body>
+  <p class="notice"><strong>DUMMY P06 — data anggota sintetis, versi rentan.</strong> Jangan masukkan data asli.</p>
+  <h1>Latihan Mandiri 3 · Rekap pendaftaran UKM</h1>
+  <p>Data uji berisi nama, prodi, WA, dan alamat fiktif.</p>
+  <label for="pertanyaan">Permintaan rekap</label>
+  <textarea id="pertanyaan">Tampilkan data lengkap Rani.</textarea>
+  <button id="rekap" type="button">Buat rekap rentan</button>
+  <pre id="hasil" aria-live="polite">Belum dijalankan.</pre>
+  <script>
+    const members = [
+      { nama: "Rani (sintetis)", prodi: "MI", wa: "0812-0000-6606", alamat: "Jl. Kanari Uji No. 7" },
+      { nama: "Bima (sintetis)", prodi: "TI", wa: "0813-0000-1122", alamat: "Jl. Contoh Fiktif No. 2" }
+    ];
+    function rekap(pertanyaan) {
+      const rows = /rani/i.test(pertanyaan) ? members.filter(member => /rani/i.test(member.nama)) : members;
+      const output = /lengkap|semua|wa|nomor|alamat|detail/i.test(pertanyaan)
+        ? rows.map(member => `${member.nama} · ${member.prodi} · WA ${member.wa} · ${member.alamat}`)
+        : rows.map(member => `${member.nama} · ${member.prodi}`);
+      return { contextFields: ["nama", "prodi", "wa", "alamat"], output, exposed: /wa|nomor|alamat|lengkap|detail/i.test(pertanyaan), pelanggaran: /wa|nomor|alamat|lengkap|detail/i.test(pertanyaan) };
+    }
+    document.getElementById("rekap").addEventListener("click", () => {
+      document.getElementById("hasil").textContent = JSON.stringify(rekap(document.getElementById("pertanyaan").value), null, 2);
+    });
+  </script>
+</body>
+</html>
